@@ -1,5 +1,5 @@
 /**
- * Sidebar Component
+ * Sidebar Component (with optional improvements)
  */
 
 import React from 'react';
@@ -8,24 +8,33 @@ import {
   Home,
   MessageSquare,
   BarChart3,
+  PieChart,
   Settings,
   X,
 } from 'lucide-react';
 
-const Sidebar = ({ isOpen, onClose }) => {
+const Sidebar = ({ isOpen = false, onClose = () => {} }) => {
   const navItems = [
-    { path: '/', icon: Home, label: 'Home' },
+    { path: '/home', icon: Home, label: 'Home' },
     { path: '/triage', icon: MessageSquare, label: 'Triage' },
     { path: '/dashboard', icon: BarChart3, label: 'Dashboard' },
+    { path: '/analytics', icon: PieChart, label: 'Analytics' },
     { path: '/settings', icon: Settings, label: 'Settings' },
   ];
+
+  // Only close on mobile
+  const handleNavClick = () => {
+    if (window.innerWidth < 1024) {
+      onClose();
+    }
+  };
   
   return (
     <>
       {/* Mobile overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={onClose}
         />
       )}
@@ -45,6 +54,7 @@ const Sidebar = ({ isOpen, onClose }) => {
             <span className="text-lg font-semibold text-gray-900">Menu</span>
             <button
               onClick={onClose}
+              aria-label="Close sidebar"
               className="p-2 rounded-md text-gray-600 hover:bg-gray-100"
             >
               <X className="w-5 h-5" />
@@ -57,7 +67,7 @@ const Sidebar = ({ isOpen, onClose }) => {
               <NavLink
                 key={item.path}
                 to={item.path}
-                onClick={onClose}
+                onClick={handleNavClick}
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                     isActive

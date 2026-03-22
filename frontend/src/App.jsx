@@ -1,10 +1,10 @@
 /**
- * Main App Component
- * Routing and Layout
+ * Main App Component with Public Landing Page and Animations
  */
 
-import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 import { Toaster } from 'react-hot-toast';
 
 // Layout Components
@@ -12,118 +12,179 @@ import Header from './components/layout/Header';
 import Sidebar from './components/layout/Sidebar';
 import Footer from './components/layout/Footer';
 
-// Auth Components
-import ProtectedRoute from './components/auth/ProtectedRoute';
-
 // Pages
+import LandingPage from './pages/LandingPage';
 import Home from './pages/Home';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 import TriagePage from './pages/TriagePage';
 import Dashboard from './pages/Dashboard';
 import AnalyticsPage from './pages/AnalyticsPage';
 import MessagePage from './pages/MessagePage';
 import SettingsPage from './pages/SettingsPage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
 
-// Auth Store
+// Auth
+import ProtectedRoute from './components/auth/ProtectedRoute';
+
+// Transition Wrapper
+import PageTransition from './components/common/PageTransition';
+
+// Store
 import useAuthStore from './store/useAuthStore';
 
-function App() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { isAuthenticated } = useAuthStore();
+const AnimatedRoutes = () => {
+  const location = useLocation();
+  const { user, isAuthenticated } = useAuthStore();
 
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
-
-  const closeSidebar = () => {
-    setSidebarOpen(false);
-  };
+  // Public routes (no sidebar/header)
+  const publicRoutes = ['/', '/login', '/register'];
+  const isPublicRoute = publicRoutes.includes(location.pathname);
 
   return (
-    <BrowserRouter>
-      <div className="min-h-screen bg-gray-50">
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 3000,
-            style: {
-              background: '#363636',
-              color: '#fff',
-            },
-            success: {
-              duration: 3000,
-              iconTheme: {
-                primary: '#10B981',
-                secondary: '#fff',
-              },
-            },
-            error: {
-              duration: 4000,
-              iconTheme: {
-                primary: '#EF4444',
-                secondary: '#fff',
-              },
-            },
-          }}
-        />
+    <div className="min-h-screen bg-gray-50">
+      {/* Header - only show when authenticated and not on public routes */}
+      {!isPublicRoute && isAuthenticated && <Header />}
+      
+      <div className="flex">
+        {/* Sidebar - only show when authenticated and not on public routes */}
+        {!isPublicRoute && isAuthenticated && <Sidebar />}
+        
+        {/* Main Content */}
+        <main className={`flex-1 ${!isPublicRoute && isAuthenticated ? 'p-8' : ''}`}>
+          <AnimatePresence mode="wait">
+            <Routes location={location} key={location.pathname}>
+              {/* Public Landing Page */}
+              <Route 
+                path="/" 
+                element={
+                  isAuthenticated ? (
+                    <Navigate to="/home" replace />
+                  ) : (
+                    <PageTransition><LandingPage /></PageTransition>
+                  )
+                } 
+              />
 
-        <Routes>
-          {/* Public Routes */}
-          <Route
-            path="/login"
-            element={
-              isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />
-            }
-          />
+              {/* Auth Routes */}
+              <Route 
+                path="/login" 
+                element={
+                  isAuthenticated ? (
+                    <Navigate to="/home" replace />
+                  ) : (
+                    <PageTransition><LoginPage /></PageTransition>
+                  )
+                } 
+              />
+              <Route 
+                path="/register" 
+                element={
+                  isAuthenticated ? (
+                    <Navigate to="/home" replace />
+                  ) : (
+                    <PageTransition><RegisterPage /></PageTransition>
+                  )
+                } 
+              />
 
-          {/* ADD THIS: */}
-          <Route
-            path="/register"
-            element={
-              isAuthenticated ? <Navigate to="/" replace /> : <RegisterPage />
-            }
-          />
-          {/* Protected Routes */}
-          <Route
-            path="/*"
-            element={
-              <ProtectedRoute>
-                <div className="flex h-screen overflow-hidden">
-                  {/* Sidebar */}
-                  <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
+              {/* Protected Routes */}
+              <Route
+                path="/home"
+                element={
+                  <ProtectedRoute>
+                    <PageTransition><Home /></PageTransition>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/triage"
+                element={
+                  <ProtectedRoute>
+                    <PageTransition><TriagePage /></PageTransition>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <PageTransition><Dashboard /></PageTransition>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/analytics"
+                element={
+                  <ProtectedRoute>
+                    <PageTransition><AnalyticsPage /></PageTransition>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/messages/:id"
+                element={
+                  <ProtectedRoute>
+                    <PageTransition><MessagePage /></PageTransition>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/settings"
+                element={
+                  <ProtectedRoute>
+                    <PageTransition><SettingsPage /></PageTransition>
+                  </ProtectedRoute>
+                }
+              />
 
-                  {/* Main Content */}
-                  <div className="flex-1 flex flex-col overflow-hidden">
-                    {/* Header */}
-                    <Header onMenuClick={toggleSidebar} />
-
-                    {/* Page Content */}
-                    <main className="flex-1 overflow-y-auto">
-                      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                        <Routes>
-                          <Route path="/" element={<Home />} />
-                          <Route path="/triage" element={<TriagePage />} />
-                          <Route path="/dashboard" element={<Dashboard />} />
-                          <Route path="/analytics" element={<AnalyticsPage />} />
-                          <Route path="/messages/:id" element={<MessagePage />} />
-                          <Route path="/settings" element={<SettingsPage />} />
-                          <Route path="*" element={<Navigate to="/" replace />} />
-                        </Routes>
-                      </div>
-                    </main>
-
-                    {/* Footer */}
-                    <Footer />
-                  </div>
-                </div>
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
+              {/* Catch all - redirect to home if authenticated, landing if not */}
+              <Route 
+                path="*" 
+                element={<Navigate to={isAuthenticated ? "/home" : "/"} replace />} 
+              />
+            </Routes>
+          </AnimatePresence>
+        </main>
       </div>
-    </BrowserRouter>
+
+      {/* Footer - only show when authenticated and not on public routes */}
+      {!isPublicRoute && isAuthenticated && <Footer />}
+      
+      {/* Toast Notifications */}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: '#363636',
+            color: '#fff',
+          },
+          success: {
+            duration: 3000,
+            iconTheme: {
+              primary: '#10b981',
+              secondary: '#fff',
+            },
+          },
+          error: {
+            duration: 4000,
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#fff',
+            },
+          },
+        }}
+      />
+    </div>
   );
-}
+};
+
+const App = () => {
+  return (
+    <Router>
+      <AnimatedRoutes />
+    </Router>
+  );
+};
 
 export default App;

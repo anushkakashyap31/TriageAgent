@@ -17,7 +17,7 @@ Develop an intelligent AI-driven triage system for the Non-Profit domain. The ap
 
 ## Major Tools	
 
-Python, FastAPI, React, Firebase, Google Gemini AI, spaCy
+Python, FastAPI, Google Gemini LLM API, LangChain, React, Firebase, spaCy
 
 ---
 
@@ -77,6 +77,7 @@ TriageAgent follows a **Multi-Agent AI Architecture with 3-Tier Client-Server Pa
 | **Zustand** | Global state management with persistence |
 | **Axios** | HTTP client for API calls |
 | **Lucide Icons** | Modern icon library |
+| **Framer Motion** | Animation library |
 | **React Router 6** | Client-side routing |
 | **React Hot Toast** | Toast notifications |
 
