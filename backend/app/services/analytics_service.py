@@ -264,8 +264,8 @@ class AnalyticsService:
                     "approval_rate": approval_rate,
                     "avg_processing_time": response_times.get("avg_processing_time", 0),
                 },
-                "urgency_distribution": stats_7d.get("by_urgency", {}),
-                "intent_distribution": stats_7d.get("by_intent", {}),
+                "urgency_distribution": stats_30d.get("by_urgency", {}),
+                "intent_distribution": stats_30d.get("by_intent", {}),
                 "trending_intents": trending,
                 "response_times": response_times,
             }

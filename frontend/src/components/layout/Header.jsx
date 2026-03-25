@@ -32,7 +32,7 @@ const Header = () => {
             <div className="flex items-center gap-3">
               <div className="text-right hidden sm:block">
                 <p className="text-sm font-medium text-gray-900">
-                  {user?.displayName || user?.email}
+                  {user?.full_name || user?.email}
                 </p>
                 <p className="text-xs text-gray-500">{user?.email}</p>
               </div>
