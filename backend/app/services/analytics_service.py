@@ -120,7 +120,7 @@ class AnalyticsService:
     
     async def get_response_time_stats(self, days: int = 7) -> Dict[str, float]:
         """
-        Calculate average response times
+        Calculate average response times from metadata
         
         Args:
             days: Number of days to analyze
@@ -139,17 +139,15 @@ class AnalyticsService:
                     "max_processing_time": 0.0,
                 }
             
-            # Calculate processing times
+            # Extract processing times from metadata
             processing_times = []
             for result in results:
-                created = result.get("created_at")
-                updated = result.get("updated_at")
+                metadata = result.get("metadata", {})
+                processing_time = metadata.get("processing_time_seconds")
                 
-                if created and updated:
-                    # Calculate time difference in seconds
-                    if isinstance(created, datetime) and isinstance(updated, datetime):
-                        diff = (updated - created).total_seconds()
-                        processing_times.append(diff)
+                # Only include valid processing times
+                if processing_time and isinstance(processing_time, (int, float)) and processing_time > 0:
+                    processing_times.append(processing_time)
             
             if not processing_times:
                 return {

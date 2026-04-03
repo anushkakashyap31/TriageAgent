@@ -77,7 +77,7 @@ const LandingPage = () => {
   ];
 
   const stats = [
-    { value: '3 sec', label: 'Avg Processing Time', icon: Clock },
+    { value: '30 sec', label: 'Avg Processing Time', icon: Clock },
     { value: '95%', label: 'Classification Accuracy', icon: TrendingUp },
     { value: '10-20x', label: 'Faster Than Manual', icon: Zap },
   ];

@@ -38,7 +38,8 @@ async def triage_message(
         Complete triage result
     """
     try:
-        log_info("Triage request received", message_length=len(message.text))
+        log_info("Triage request received",
+                message_length=len(message.text))
         
         # Process through orchestrator
         result = await triage_orchestrator.process(message)

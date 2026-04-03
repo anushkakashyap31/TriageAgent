@@ -92,6 +92,7 @@ class TriageOrchestrator:
                     "sender_email": message_input.sender_email,
                     "sender_name": message_input.sender_name,
                     "processing_time_seconds": processing_time,
+                    "user_id": (message_input.metadata or {}).get("user_id"),
                     **(message_input.metadata or {})
                 }
             )
